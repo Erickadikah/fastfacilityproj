@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Facility Management System-admin</title>
+  <!-- Bootstrap CSS -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="/fastfacilityproj/fastproj/host/templates/css/index.css"/>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <style>
+    body {
+      padding-top: 56px;
+      /*background: red;*/
+    background-image: url('../static/images/hm.jpg');
+    background-size: cover; 
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    overflow-x: hidden;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 56px;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      width: 80px;
+      padding: 20px 0;
+      background-color: #343a40;
+      transition: width 0.3s;
+    }
+
+    .main-content {
+      margin-left: 80px;
+      transition: margin-left 0.3s;
+    }
+
+    .sidebar.collapsed {
+      width: 0;
+    }
+
+    .sidebar.collapsed + .main-content {
+      margin-left: 0;
+    }
+
+    .sidebar-nav-link {
+      color: #fff;
+    }
+
+    .sidebar-nav-link:hover {
+      color: #dee2e6;
+    }
+
+    .sidebar-nav-link.active {
+      color: #007bff;
+    }
+    .client-list {
+    list-style: none;
+    padding: 0;
+}
+
+.client-list li {
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.client-list li i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+.client-list li span {
+    margin-right: 5px;
+    font-weight: bold;
+}
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: none;
+      z-index: 10000;
+    }
+    #userCreationForm {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      display: none;
+      padding: 20px;
+      background-color: gray;
+      width: 700px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+   #DocumentForm {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    display: none;
+    padding: 20px;
+    background-color: #343A40;
+    width: 700px;
+    height: 70vh;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+   #DocumentsForm {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    display: none;
+    padding: 20px;
+    background-color: red;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+   }
+   
+#DocumentForm.show {
+    display: block !important;
+}
+    #userCreationForm.show,
+    #overlay.show {
+      display: block;
+    }
+    /* Profile section */
+   #userProfile {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 400px;
+    z-index: 999;
+    background-color: #ffffff;
+    padding: 30px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+#userProfile form {
+    display: flex;
+    flex-direction: column;
+}
+
+#userProfile .form-group {
+    margin-bottom: 15px;
+}
+
+#userProfile label {
+    font-weight: bold;
+    color: #333333;
+}
+
+#userProfile input[type="text"],
+#userProfile input[type="email"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #dddddd;
+    border-radius: 5px;
+}
+
+#userProfile .btn {
+    margin-top: 10px;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
+#userProfile .btn-primary {
+    background-color: #007bff;
+    color: #ffffff;
+}
+
+#userProfile .btn-secondary {
+    background-color: #6c757d;
+    color: #ffffff;
+}
+
+#userProfile .btn-danger {
+    background-color: #dc3545;
+    color: #ffffff;
+}
+
+#userProfile .btn-success {
+    background-color: #28a745;
+    color: #ffffff;
+}
+
+    #notificationSection {
+      left: 100px; 
+      position: fixed;
+      top: 80px;
+      z-index: 99;
+      width: 400px;
+      padding: 20px;
+      display: none;
+    }
+    
+    #documentList {
+  list-style-type: none;
+  padding: 0;
+}
+
+#documentList li {
+  background-color: #f8f9fa;
+  padding: 10px; 
+  margin-bottom: 5px;
+}
+
+#documentList li:hover {
+  background-color: #e9ecef;
+}
+
+#documentList li a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+#documentList li a:hover {
+  text-decoration: underline;
+}
+  </style>
+
+</head>
+<body>
+  <!-- Navigation bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" href="#">Admin Dashboard</a>
+    <button class="navbar-toggler" type="button" id="sidebarCollapseBtn">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+        </li>
+        <!-- Show logged-in user's name here -->
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link text-success" href="#"> {{ user.username }} </a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+  <!-- Sidebar -->
+  <div class="sidebar bg-dark text-light">
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link active" href="#" id="profileLink">
+          <i class="fas fa-user fa-lg"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" id="notificationLinkSidebar">
+          <i class="fas fa-bell fa-lg"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'logout' %}">
+          <i class="fas fa-sign-out-alt fa-lg"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <!-- Page content -->
+  <div class="main-content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">My Clients</h1>
+          </div>
+          <button type="button" class="btn btn-primary mb-3" id="toggleUserForm">Add New Client</button>
+          <button type="button" class="btn btn-primary mb-3" id="toggleuserDocumentForm">My Documents</button>
+          <button type="button" class="btn btn-primary mb-3" id="showFormBtn" onclick="toggleForm()">Upload Document</button>
+          <!--universal docs-->
+          <div id="overlay" style="display: none; 400px; height: 300px; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 999;"></div>
+          <div id="formContainer" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; background-color: #f7f7f7; border-radius: 4px; padding: 30px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+    <form id="userDocumentForm" enctype="multipart/form-data" action="{% url 'upload_file' user_id=user.id %}" method="post">
+        {% csrf_token %}
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label for="documentDescription" style="font-weight: bold;">Description:</label>
+            <input type="text" class="form-control" id="documentDescription" name="description" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px;" placeholder="Enter description">
+        </div>
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label for="documentFile" style="font-weight: bold;">File:</label>
+            <input type="file" class="form-control-file" id="documentFile" name="file" accept=".pdf,.doc,.docx,.txt" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px;">
+        </div>
+        <button type="submit" class="btn btn-primary" style="background-color: #007bff; color: #fff; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; transition: background-color 0.3s;">Upload</button>
+        <button type="button" class="btn btn-secondary" onclick="cancelUpload()" style="margin-left: 10px;">Cancel</button>
+    </form>
+</div>        
+<script>
+    function toggleForm() {
+        var formContainer = document.getElementById("formContainer");
+        var overlay = document.getElementById("overlay");
+        if (formContainer.style.display === "none") {
+            formContainer.style.display = "block";
+            overlay.style.display = "block";
+        } else {
+            formContainer.style.display = "none";
+            overlay.style.display = "none";
+        }
+    }
+    function cancelUpload() {
+        var formContainer = document.getElementById("formContainer");
+        var overlay = document.getElementById("overlay");
+        formContainer.style.display = "none";
+        overlay.style.display = "none";
+    }
+</script>
+
+          <!-- User creation form -->
+          <div id="userCreationForm">
+            <form id="createUserForm">
+              <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="username" placeholder="Enter username" />
+              </div>
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" id="email" placeholder="Enter email" />
+              </div>
+              <div class="form-group">
+                <label for="phoneNumber">Phone Number</label>
+                <input type="text" class="form-control" id="phoneNumber" placeholder="Enter phone number" />
+              </div>
+              <div class="form-group">
+                <label for="rentPayDate">Rent Pay Date</label>
+                <input type="date" class="form-control" id="rentPayDate" />
+              </div>
+              <div class="form-group">
+                <label for="rentEndDate">Rent End Date</label>
+                <input type="date" class="form-control" id="rentEndDate" />
+              </div>
+              <button type="submit" class="btn btn-success">Submit</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <!-- document Form-->
+      <div id="overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 999;"></div>
+     <div id="userDocumentForm">
+    <div id="DocumentForm">
+        <h3 class='text-center text-white'>Documents</h3>
+        <ul class='mt-10' id="documentList">
+        </ul>
+    </div>
+</div>
+      <!--End of doc-->
+      
+      <!-- user Profile -->
+      <div id="userProfile" style='display:None;'>
+        <!-- Profile toggle form -->
+        <div>
+          {% comment %} user profile data {% endcomment %}
+          <form>
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input type="text" class="form-control" id="username" value="{{ user.username }}" readonly>
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" class="form-control" id="email" value="{{ user.email }}" readonly>
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone</label>
+              <input type="text" class="form-control" id="phone" value="{{ user.phone }}" readonly>
+            </div>
+            <div class="form-group">
+              <label for="address">Address</label>
+              <input type="text" class="form-control" id="address" value="{{ user.address }}" readonly>
+            </div>
+            <button type="button" class="btn btn-primary mt-3" id="editProfileBtn">Edit Profile</button>
+            <button type="button" class="btn btn-secondary mt-3" id="closeProfileBtn">Close</button>
+            <button type="button" class="btn btn-danger mt-3" id="deleteProfileBtn">Delete Profile</button>
+            <button type="button" class="btn btn-success mt-3" id="saveProfileBtn" style="display: none">Save</button>
+            <button type="button" class="btn btn-secondary mt-3" id="cancelProfileBtn" style="display: none">Cancel</button>
+            <button type="button" class="btn btn-danger mt-3" id="confirmDeleteProfileBtn" style="display: none">Confirm Delete</button>
+            <button type="button" class="btn btn-secondary mt-3" id="cancelDeleteProfileBtn" style="display: none">Cancel Delete</button>
+          </form>
+        </div>
+      </div>
+  
+  <!-- Notification section -->
+  <div id="notificationSection">
+    <!-- Notification content here -->
+    <div class="card border-0">
+      <div class="card-header bg-success text-white">
+        <h5 class="card-title mb-0">Notifications</h5>
+      </div>
+      <div class="card-body p-4">
+        <div class="list-group list-group-flush" id="messageList">
+          <!-- Messages will be dynamically added here -->
+        </div>
+      </div>
+    </div>
+  </div>
+      <!-- Display users -->
+<div class="row">
+  {% for client in clients %}
+  <div class="col-md-4">
+    <div class="card mb-3" id="user_card_{{ client.id }}">
+      <div class="card-body">
+        <!-- User Avatar -->
+        <h5 class="card-title">{{ client.username }}</h5>
+        <p class="card-text">{{ client.email }}</p>
+        <!-- Add more client details as needed -->
+        <div class="btn-group" role="group" aria-label="User Actions">
+          <button type="button" class="btn btn-primary update-button">Update</button>
+          <button type="button" class="btn btn-danger delete-button" data-user-id="{{ client.id }}">Delete</button>
+          <button type="button" class="btn btn-success view-button" data-user-id="{{ client.id }}">View</button>
+          <button type="button" class="btn btn-warning message-button" data-user-id="{{ client.id }}">Message</button>
+        </div>
+        <form class="update-form" style="display: none;" id="updateForm_{{ client.id }}" action="{% url 'update_client' client.id %}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="username_{{ client.id }}">Username</label>
+            <input type="text" class="form-control" id="username_{{ client.id }}" name="username" value="{{ client.username }}">
+          </div>
+          <div class="form-group">
+            <label for="email_{{ client.id }}" class="col-form-label font-weight-bold text-muted">Email</label>
+            <input type="email" class="form-control" id="email_{{ client.id }}" name="email" value="{{ client.email }}">
+          </div>
+          <div class="form-group">
+            <label for="phoneNumber_{{ client.id }}">Phone Number</label>
+            <input type="text" class="form-control" id="phoneNumber_{{ client.id }}" name="phoneNumber" value="{{ client.phoneNumber }}">
+          </div>
+          <div class="form-group">
+            <label for="rentPayDate_{{ client.id }}">Rent Pay Date</label>
+            <input type="date" class="form-control" id="rentPayDate_{{ client.id }}" name="rentPayDate" value="{{ client.rentPayDate }}">
+          </div>
+          <div class="form-group">
+            <label for="rentEndDate_{{ client.id }}">Rent End Date</label>
+            <input type="date" class="form-control" id="rentEndDate_{{ client.id }}" name="rentEndDate" value="{{ client.rentEndDate }}">
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <form id="sendMessageForm_{{ client.id }}" method="post" enctype="multipart/form-data" action="{% url 'send_message' client.id %}" style='display:None;'>
+      
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="messageText_{{ client.id }}">Message:</label>
+            <textarea class="form-control" id="messageText_{{ client.id }}" name="message_text" rows="4"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="fileInput">File:</label>
+            <input type="file" class="form-control-file" id="fileInput" name="file" />
+          </div>
+          <button type="submit" class="btn btn-primary">Send Message</butt66on>
+        </form>
+      </div>
+      
+      <div class="card-footer user-details" style="display: none">
+        <p>User Details:</p>
+       <ul class="client-list">
+    <li><i class="fas fa-id-card"></i> <span>ID:</span> {{ client.id }}</li>
+    <li><i class="fas fa-user"></i> <span>Username:</span> {{ client.username }}</li>
+    <li><i class="fas fa-envelope"></i> <span>Email:</span> {{ client.email }}</li>
+    <li><i class="fas fa-phone"></i> <span>Phone Number:</span> {{ client.phoneNumber }}</li>
+    <li><i class="far fa-calendar-alt"></i> <span>Pay Date:</span> {{ client.rentPayDate }}</li>
+    <li><i class="far fa-calendar-alt"></i> <span>End Date:</span> {{ client.rentEndDate }}</li>
+</ul>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+    </div>
+  </div>
+<script>
+    
+    {% for message in messages %}
+      toastr.{{ message.tags }} ('{{ message  }}');
+      {% endfor %}
+  </script>
+  <!-- Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Toastr CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<!-- Toastr JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      // Toggle user details when clicking the "View" button
+      $(".view-button").on("click", function () {
+        var userId = $(this).data("user-id");
+        $("#user_card_" + userId + " .user-details").toggle();
+      });
+      // docs universal
+      $(document).ready(function() {
+            $('#toggleuserDocumentsForm').click(function() {
+                $('#userDocumentForm').toggle();
+            });
+        });
+      // Toggle update form when clicking the "Update" button
+      $(".update-button").on("click", function () {
+        // Find the parent card element
+        var card = $(this).closest(".card");
+        // Toggle the update form within the card
+        card.find(".update-form").toggle();
+      });
+    
+      // Toggle message form when clicking the "Message" button
+      $(".message-button").on("click", function () {
+        var userId = $(this).data("user-id");
+        $("#sendMessageForm_" + userId).toggle(); // Corrected ID here
+      });
+    
+      // Toggle sidebar
+      $("#sidebarCollapseBtn").on("click", function () {
+        $(".sidebar").toggleClass("collapsed");
+        $(".main-content").toggleClass("collapsed");
+      });
+    
+      // Toggle user creation form when clicking the button
+      $("#toggleUserForm").on("click", function () {
+        $("#userCreationForm").toggleClass("show");
+        // $("#overlay").toggle("show"); // Toggle overlay
+      });
+      
+      $("#toggleuserDocumentForm").on("click", function () {
+        $("#DocumentForm").toggleClass("show");
+        $("#overlay").toggle();
+      });
+      
+      // Close the form and hide the overlay when the overlay is clicked
+    $("#overlay").on("click", function() {
+      $("#DocumentForm").removeClass("show");
+      $(this).hide();
+    });
+      
+      $("#profileLink").click(function() {
+        $("#userProfile").toggle();
+        $("#overlay").toggle(); // Toggle overlay
+        $("#notificationSection").hide(); // Ensure notification section is hidden
+        $("#uploadDocumentsSection").hide();
+    });
+    
+     // Close profile section when overlay is clicked
+    $("#overlay").click(function() {
+        $("#userProfile").hide();
+        $(this).hide();
+    });
+    
+      // Toggle notification section when clicking the notification links
+      $(document).ready(function() {
+  // Hide the notification section when the document is ready
+  $("#notificationSection").hide();
+
+  // Toggle notification section when clicking the notification links
+  $("#notificationLinkSidebar, #notificationLinkMainContent").click(function () {
+    $("#notificationSection").toggle();
+    $("#userProfile").hide();
+    $("#uploadDocumentsSection").hide();
+    
+    localStorage.setItem('notificationHidden', $("#notificationSection").is(":hidden"));
+    });
+  });
+    
+      $("#editProfileBtn").click(function () {
+        // Code to enable editing fields
+        $("#editProfileBtn").hide();
+        $("#deleteProfileBtn").hide();
+        $("#saveProfileBtn").show();
+        $("#cancelProfileBtn").show();
+      });
+    
+      // Cancel editing profile
+      $("#cancelProfileBtn").click(function () {
+        // Code to revert changes
+        $("#editProfileBtn").show();
+        $("#deleteProfileBtn").show();
+        $("#saveProfileBtn").hide();
+        $("#cancelProfileBtn").hide();
+      });
+    
+      // Delete profile
+      $("#deleteProfileBtn").click(function () {
+        // Code to prompt confirmation
+        $("#deleteProfileBtn").hide();
+        $("#editProfileBtn").hide();
+        $("#confirmDeleteProfileBtn").show();
+        $("#cancelDeleteProfileBtn").show();
+      });
+    
+      // Cancel profile deletion
+      $("#cancelDeleteProfileBtn").click(function () {
+        // Code to cancel deletion
+        $("#deleteProfileBtn").show();
+        $("#editProfileBtn").show();
+        $("#confirmDeleteProfileBtn").hide();
+        $("#cancelDeleteProfileBtn").hide();
+      });
+      function showNotification(message, type) {
+        toastr.options = {
+          closeButton: true,
+          progressBar: true,
+          positionClass: "toast-top-right",
+          showMethod: "slideDown",
+          timeOut: 5000 // 5 seconds
+        };
+        toastr[type](message);
+      }
+      // Submit user creation form
+      $("#createUserForm").on("submit", function (event) {
+        event.preventDefault();
+        var formData = {
+          username: $("#username").val(),
+          email: $("#email").val(),
+          phoneNumber: $("#phoneNumber").val(),
+          rentPayDate: $("#rentPayDate").val(),
+          rentEndDate: $("#rentEndDate").val(),
+        };
+    
+        // Send form data to the backend (Django view)
+        $.ajax({
+          type: "POST",
+          url: "/create_client/",
+          data: formData,
+          success: function (response) {
+            // Handle successful response (if needed)
+            console.log(response);
+            showNotification("Client created successfully", "success");
+            // Close the user creation form
+            $("#userCreationForm").removeClass("show");
+            // $("#overlay").removeClass("show");
+            // Refresh the page or update the user list, etc.
+            window.location.reload();
+          },
+          error: function (xhr, textStatus, errorThrown) {
+            // Handle error (if needed)
+            console.error(xhr.responseText);
+          },
+        });
+      });
+    
+      // Delete client when clicking the "Delete" button
+      $(".delete-button").on("click", function () {
+        var userId = $(this).data("user-id");
+        if (confirm("Are you sure you want to delete this user?")) {
+          $.ajax({
+            type: "DELETE",
+            url: `/delete_client/${userId}/`,
+            success: function (response) {
+            showNotification("Client deleted successfully", "success");
+              console.log(response);
+              // Remove the card from the UI if deletion was successful
+              $("#user_card_" + userId).remove();
+            },
+            error: function (xhr, textStatus, errorThrown) {
+              showNotification("Error deleting client", "error");
+              console.error(xhr.responseText);
+            },
+          });
+        }
+      });
+    
+      // Submit message form when clicking the "Send Message" button
+      $(".message-button").on("click", function () {
+        var userId = $(this).data("user-id");
+    
+        $("#sendMessageForm_" + userId).on("submit", function (event) {
+          event.preventDefault();
+          var formData = new FormData(this); // Create FormData object from the form
+    
+          // Send form data to the backend (Django view)
+          $.ajax({
+            type: "POST",
+            url: `/send_message/${ userId }/`, // Adjust the URL to your Django view
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+              // Show toaster notification on success
+              toastr.success('Message sent successfully');
+              setTimeout(function() {
+                window.location.reload();
+              }, 3000); // 3000 milliseconds = 5 seconds
+            },
+            error: function(xhr, status, error) {
+              console.error('Error sending message:', error);
+            }
+          });
+        });
+      });
+
+    
+      // Close message form if clicking outside of it
+      $(document).on("click", function (event) {
+        if (!$(event.target).closest("#sendMessageForm").length) {
+          // If the clicked element is not within the message form or its children
+          $("#sendMessageForm").hide();
+        }
+      });
+    });
+    function toggleMaintenancePage() {
+      var maintenanceContainer = document.getElementById("maintenance-container");
+
+      // Check if maintenance.html is already loaded
+      if (maintenanceContainer.innerHTML.trim() === "") {
+        // Load maintenance.html content using fetch API
+        fetch("maintenance.html")
+          .then(response => response.text())
+          .then(html => maintenanceContainer.innerHTML = html)
+          .catch(error => console.error("Error loading maintenance.html:", error));
+      } else {
+        // Clear maintenance.html content
+        maintenanceContainer.innerHTML = "";
+      }
+    }
+    //docs notifications 
+    function fetchMessages() {
+      $.ajax({
+        url: '/get_documents/{{ user.id }}/',
+        type: 'GET',
+        success: function(response) {
+          $('#messageList').empty(); // Clear existing messages
+          
+          if (Array.isArray(response.documents)) {
+            // If response contains documents array, iterate over documents
+            response.documents.forEach(function(document) {
+              displayMessage(document);
+            });
+            $('#notificationSection').show();
+          } else {
+            console.error('Invalid or missing documents array in response:', response);
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error('Error fetching messages:', error);
+        }
+      });
+    }
+    
+    function displayMessage(document) {
+  var messageHtml = `
+   <a href="${document.file_s3_url}" class="list-group-item list-group-item-action" target="_blank">
+  <div class="d-flex justify-content-between align-items-start">
+    <div>
+      <h6 class="mb-1">New Message from ${document.sender}</h6>
+      <p class="mb-1">${document.description}</p>
+    </div>
+    <span class="badge badge-primary">Open</span>
+  </div>
+  <div>
+    <button class="btn btn-sm btn-danger delete-message-btn" data-message-id="${document.id}">Delete</button>
+  </div>
+</a>
+  `;
+  $('#messageList').append(messageHtml);
+  }
+  // Fetch messages on page load
+  fetchMessages();
+    
+    //delete document
+    function delete_doc(document_id) {
+      $.ajax({
+        url: '/delete_document/' + document_id + '/', // Use the document ID in the URL
+        type: 'POST',
+        success: function(response) {
+          console.log('Response:', response);
+          // Check if the deletion was successful
+          if (response.message === 'Document deleted successfully') {
+            // Remove the document from UI
+            toastr.success('Document deleted successfully');
+            $('#messageList a[data-message-id="' + document_id + '"]').remove();
+            setTimeout(function() {
+              window.location.reload();
+            }, 3000); // 3000 milliseconds = 3 seconds
+          } else {
+            console.error('Error deleting document:', response.error);
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error('Error deleting document:', error);
+        }
+      });
+    }
+    
+    // Event listener for delete message buttons
+    $(document).on('click', '.delete-message-btn', function() {
+      // Retrieve the message ID from the data attribute
+      var document_id = $(this).data('message-id');
+      // Call the deleteMessage function with the message ID
+      delete_doc(document_id);
+    });
+    
+    //docs display
+  function displayDocuments(document) {
+    // Create a list item for the document
+    var listItem = $('<li></li>');
+
+    // Add document details to the list item
+  listItem.append('<p> From ' + document.sender + '</p>');
+  listItem.append('<p>' + document.description + '</p>');
+  listItem.append('<a href="' + document.file_s3_url + '">Download</a>');
+  listItem.append(`<button class="btn btn-sm btn-danger delete-message-btn" data-message-id="${document.id}">Delete</button>`);
+
+    // Append the list item to the message list
+    $('#documentList').append(listItem);
+}
+
+  $.ajax({
+    url: '/get_documents/{{ user.id }}/',
+    type: 'GET',
+    success: function(response) {
+        $('#documentList').empty(); // Clear existing messages
+        
+        if (Array.isArray(response.documents)) {
+            // If response contains documents array, iterate over documents
+            response.documents.forEach(function(document) {
+                displayDocuments(document); // Corrected function name
+            });
+            $('#documentList').show();
+        } else {
+            console.error('Invalid or missing documents array in response:', response);
+        }
+    },
+    error: function(xhr, status, error) {
+        console.error('Error fetching documents:', error);
+    }
+});
+
+
+    // Add click event listener to the maintenance link
+    document.getElementById("maintenance-link").addEventListener("click", function(event) {
+      event.preventDefault(); // Prevent default link behavior
+      toggleMaintenancePage(); // Toggle maintenance.html page
+    });
+    function updateClient(userId, formData) {
+      $.ajax({
+        type: 'POST',
+        url: `/update_client/${userId}/`,
+        data: formData,
+        success: function(response) {
+          // Show toaster notification on success
+          toastr.success('Client updated successfully');
+          // You may add more logic here if needed
+        },
+        error: function(xhr, status, error) {
+          console.error('Error updating client:', error);
+        }
+      });
+    }
+    function initializeToastr() {
+      toastr.options = {
+        closeButton: true,
+        progressBar: true,
+        positionClass: "toast-top-right",
+        showMethod: "slideDown",
+        timeOut: 5000 // 5 seconds
+      };
+    }
+    $(document).ready(function() {
+    // Handle click event on the toggle button
+    $('#toggleDocumentsButton').click(function() {
+        // Toggle display of document list
+        $('#documentList').toggle();
+        // Check if document list is visible
+        if ($('#documentList').is(':visible')) {
+            // Fetch documents via AJAX if the list is visible
+            $.ajax({
+                url: '/documents/{{ user.id }}/', // URL to fetch documents
+                type: 'GET',
+                success: function(response) {
+                    // Clear existing document items
+                    $('#documentList').empty();
+                    // Populate document items
+                    response.documents.forEach(function(document) {
+                        // Create list item for each document
+                        var listItem = $('<li>').text(document.description);
+                        // Append list item to document list
+                        $('#documentList').append(listItem);
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching documents:', error);
+                }
+            });
+        }
+    });
+});
+$('#uploadBtn').click(function() {
+    // Get the file input element
+    var fileInput = $('#documentFile')[0];
+    // Check if a file is selected
+    if (fileInput.files.length === 0) {
+        console.error("No file selected");
+        return;
+    }
+
+    // Create a FormData object to capture form data including the file
+    var formData = new FormData();
+    formData.append('description', $('#documentDescription').val());  // Add description field
+    formData.append('file', fileInput.files[0]);  // Add file field
+    
+    // Append the CSRF token to the FormData
+    formData.append('csrfmiddlewaretoken', $('input[name="csrfmiddlewaretoken"]').val());
+
+    // Send the AJAX request
+    $.ajax({
+        url: '/upload_file/{{ user.id }}/',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+          if (response.success) {
+            toastr.success('File uploaded successfully');
+          }
+          setTimeout(function(){
+            location.reload()
+          }, 3000);
+            // Handle successful upload
+            console.log(response);
+        },
+        error: function(xhr, status, error) {
+            // Handle error
+            console.error(xhr.responseText);
+        }
+    });
+});
+  </script>
+</body>
+</html>

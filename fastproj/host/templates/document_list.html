@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Documents</title>
+</head>
+<body>
+    </li>
+        <!-- Show logged-in user's name here -->
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link text-success" href="#"> {{ user.username }} </a>
+        </li>
+        {% endif %}
+    <h1>User Documents for {{ user.username }}</h1>
+    <ul>
+        {% for document in documents %}
+            <li>
+                <p>Sender: {{ document.sender.username }}</p>
+                <p>Description: {{ document.description }}</p>
+                <a href="{{ document.file_s3_url }}">Download</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

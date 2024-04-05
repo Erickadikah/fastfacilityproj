@@ -1,0 +1,18 @@
+<div class='DocumentsForm'>
+    <!-- Upload form -->
+    <form id="userDocumentForm" action="/upload_file/{{ user.id }}/" method="post" enctype="multipart/form-data">
+        <!-- Form fields for description and file upload -->
+        <!-- Submit button -->
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+</div>
+
+<!-- Display uploaded documents -->
+<div class="uploaded-documents">
+    <h2>Uploaded Documents</h2>
+    <ul>
+        {% for document in uploaded_documents %}
+            <li>{{ document.description }} - <a href="{{ document.file_s3_url }}">Download</a></li>
+        {% endfor %}
+    </ul>
+</div>
