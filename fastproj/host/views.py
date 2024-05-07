@@ -38,6 +38,8 @@ from .forms import UploadForm
 from django.shortcuts import get_object_or_404
 import boto3
 from .utils import delete_file_from_s3
+# from rent_counter.countf import countdown
+# import counts
 # from django.shorts import redirect
 
 

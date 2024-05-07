@@ -29,7 +29,8 @@ POSTMARK_API_TOKEN ='2bdb758e-0ee6-4944-9a16-09e451bf6cb5'
 
 ALLOWED_HOSTS = [
     'c22d5d9467d647a78ff67b54152065cd.vfs.cloud9.eu-west-1.amazonaws.com',
-    'x23129522-fastproj.eba-b6k9m3mp.eu-west-1.elasticbeanstalk.com'
+    'x23129522-fastproj.eba-b6k9m3mp.eu-west-1.elasticbeanstalk.com',
+    '127.0.0.1'
     ]
 
 # Application definition
